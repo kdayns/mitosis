@@ -1,6 +1,9 @@
 
+#if 1
 #define COMPILE_RIGHT
-//#define COMPILE_LEFT
+#else
+#define COMPILE_LEFT
+#endif
 
 #include "mitosis.h"
 #include "nrf_drv_config.h"

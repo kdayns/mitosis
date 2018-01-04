@@ -12,6 +12,8 @@ else
 include $(TEMPLATE_PATH)/Makefile.posix
 endif
 
+GNU_INSTALL_ROOT=/
+
 MK := mkdir
 RM := rm -rf
 
@@ -54,6 +56,7 @@ LIBS  = $(abspath ../../../../components/properitary_rf/gzll/gcc/gzll_gcc.a)
 
 #includes common to all targets
 INC_PATHS  = -I$(abspath ../../config)
+INC_PATHS += -I$(abspath ../../../../components/toolchain/cmsis/include)
 INC_PATHS += -I$(abspath ../../../../components/device)
 INC_PATHS += -I$(abspath ../../../../components/toolchain/CMSIS/Include)
 INC_PATHS += -I$(abspath ../../../../components/properitary_rf/gzll)

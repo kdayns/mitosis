@@ -1,11 +1,4 @@
 
-#define HAND_SENSE 12
-#define RIGHT_HAND false
-#define LEFT_HAND true
-
-#define ALPHA_SENSE 20
-#define ALPABETICAL false
-
 // left hand pins
 
 #define L_LED 23
