@@ -23,7 +23,8 @@ const nrf_drv_rtc_t rtc_deb = NRF_DRV_RTC_INSTANCE(1); /**< Declaring an instanc
 
 
 // Define payload length
-#define TX_PAYLOAD_LENGTH 3 ///< 3 byte payload length when transmitting
+#define TX_PAYLOAD_LENGTH 5
+static nrf_gzll_device_tx_info_t last_tx_info = { -1, -1 };
 
 // Data and acknowledgement payloads
 static uint8_t data_payload[TX_PAYLOAD_LENGTH];                ///< Payload to send to Host. 
@@ -105,6 +106,8 @@ static void send_data(void)
                       ((keys & 1<<S23) ? 1:0) << 1 | \
                       0 << 0;
 
+    data_payload[3] = last_tx_info.num_tx_attempts;
+    data_payload[4] = last_tx_info.num_channel_switches;
     nrf_gzll_add_packet_to_tx_fifo(PIPE_NUMBER, data_payload, TX_PAYLOAD_LENGTH);
 }
 
@@ -268,6 +271,7 @@ void  nrf_gzll_device_tx_success(uint32_t pipe, nrf_gzll_device_tx_info_t tx_inf
 {
     uint32_t ack_payload_length = NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH;    
 
+    last_tx_info = tx_info;
     if (tx_info.payload_received_in_ack)
     {
         // Pop packet and write first byte of the payload to the GPIO port.
@@ -278,7 +282,7 @@ void  nrf_gzll_device_tx_success(uint32_t pipe, nrf_gzll_device_tx_info_t tx_inf
 // no action is taken when a packet fails to send, this might need to change
 void nrf_gzll_device_tx_failed(uint32_t pipe, nrf_gzll_device_tx_info_t tx_info)
 {
-    
+    last_tx_info = tx_info;
 }
 
 // Callbacks not needed

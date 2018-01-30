@@ -22,7 +22,7 @@
 
 
 // Define payload length
-#define TX_PAYLOAD_LENGTH 3 ///< 3 byte payload length
+#define TX_PAYLOAD_LENGTH 5
 
 // ticks for inactive keyboard
 #define INACTIVE 100000
@@ -41,7 +41,7 @@
 static uint8_t data_payload_left[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH];  ///< Placeholder for data payload received from host. 
 static uint8_t data_payload_right[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH];  ///< Placeholder for data payload received from host. 
 static uint8_t ack_payload[TX_PAYLOAD_LENGTH];                   ///< Payload to attach to ACK sent to device.
-static uint8_t data_buffer[10];
+static uint8_t data_buffer[10 + 8 + 1];
 
 // Debug helper variables
 extern nrf_gzll_error_code_t nrf_gzll_error_code;   ///< Error code
@@ -49,6 +49,7 @@ static bool init_ok, enable_ok, push_ok, pop_ok, packet_received_left, packet_re
 uint32_t left_active = 0;
 uint32_t right_active = 0;
 uint8_t c;
+static uint16_t left_rssi = 0, right_rssi = 0;
 
 
 void uart_error_handle(app_uart_evt_t * p_event)
@@ -142,6 +143,8 @@ int main(void)
                              ((data_payload_left[2] & 1<<2) ? 1:0) << 2 |
                              ((data_payload_left[2] & 1<<3) ? 1:0) << 3 |
                              ((data_payload_left[2] & 1<<4) ? 1:0) << 4;
+	    data_buffer[14] = data_payload_left[3];
+	    data_buffer[15] = data_payload_left[4];
         }
 
         if (packet_received_right)
@@ -175,14 +178,24 @@ int main(void)
                              ((data_payload_right[2] & 1<<3) ? 1:0) << 1 |
                              ((data_payload_right[2] & 1<<2) ? 1:0) << 2 |
                              ((data_payload_right[2] & 1<<1) ? 1:0) << 3;
+	    data_buffer[16] = data_payload_right[3];
+	    data_buffer[17] = data_payload_right[4];
         }
 
         // checking for a poll request from QMK
         if (app_uart_get(&c) == NRF_SUCCESS && c == 's')
         {
             // sending data to QMK, and an end byte
-            nrf_drv_uart_tx(data_buffer,10);
-            app_uart_put(0xE0);
+            //nrf_drv_uart_tx(data_buffer,10);
+#if 1
+            data_buffer[10] = left_rssi & 0x00ff;
+            data_buffer[11] = (left_rssi & 0xff00) >> 8;
+            data_buffer[12] = right_rssi & 0x00ff;
+            data_buffer[13] = (right_rssi & 0xff00) >> 8;
+#endif
+            data_buffer[18] = 0xe0;
+            nrf_drv_uart_tx(data_buffer, 19);
+            //app_uart_put(0xE0);
 
             // debugging help, for printing keystates to a serial console
             /*
@@ -214,7 +227,7 @@ int main(void)
             */
         }
         // allowing UART buffers to clear
-        nrf_delay_us(10);
+        //nrf_delay_us(10);
         
         // if no packets recieved from keyboards in a few seconds, assume either
         // out of range, or sleeping due to no keys pressed, update keystates to off
@@ -258,6 +271,7 @@ void nrf_gzll_host_rx_data_ready(uint32_t pipe, nrf_gzll_host_rx_info_t rx_info)
     {
         packet_received_left = true;
         left_active = 0;
+	left_rssi = rx_info.rssi;
         // Pop packet and write first byte of the payload to the GPIO port.
         nrf_gzll_fetch_packet_from_rx_fifo(pipe, data_payload_left, &data_payload_length);
     }
@@ -265,6 +279,7 @@ void nrf_gzll_host_rx_data_ready(uint32_t pipe, nrf_gzll_host_rx_info_t rx_info)
     {
         packet_received_right = true;
         right_active = 0;
+	right_rssi = rx_info.rssi;
         // Pop packet and write first byte of the payload to the GPIO port.
         nrf_gzll_fetch_packet_from_rx_fifo(pipe, data_payload_right, &data_payload_length);
     }
