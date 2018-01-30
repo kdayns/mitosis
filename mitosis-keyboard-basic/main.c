@@ -201,7 +201,12 @@ int main()
 {
     // Initialize Gazell
     nrf_gzll_init(NRF_GZLL_MODE_DEVICE);
-    
+
+    nrf_gzll_set_tx_power(NRF_GZLL_TX_POWER_N12_DBM);
+
+    nrf_gzll_set_datarate(NRF_GZLL_DATARATE_250KBIT);
+    nrf_gzll_set_timeslot_period(2700);
+
     // Attempt sending every packet up to 100 times    
     nrf_gzll_set_max_tx_attempts(100);
 
@@ -229,8 +234,8 @@ int main()
     // Main loop, constantly sleep, waiting for RTC and gpio IRQs
     while(1)
     {
-        __SEV();
         __WFE();
+        __SEV();
         __WFE(); 
     }
 }

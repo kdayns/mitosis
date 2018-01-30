@@ -90,6 +90,11 @@ int main(void)
     // Initialize Gazell
     nrf_gzll_init(NRF_GZLL_MODE_HOST);
 
+    nrf_gzll_set_tx_power(NRF_GZLL_TX_POWER_4_DBM);
+
+    nrf_gzll_set_datarate(NRF_GZLL_DATARATE_250KBIT);
+    nrf_gzll_set_timeslot_period(2700);
+
     // Addressing
     nrf_gzll_set_base_address_0(0x01020304);
     nrf_gzll_set_base_address_1(0x05060708);
