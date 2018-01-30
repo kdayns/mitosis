@@ -100,7 +100,7 @@ int main(void)
     nrf_gzll_set_base_address_1(0x05060708);
   
     // Load data into TX queue
-    ack_payload[0] = 0x55;
+    ack_payload[0] = 0x10;
     nrf_gzll_add_packet_to_tx_fifo(0, data_payload_left, TX_PAYLOAD_LENGTH);
     nrf_gzll_add_packet_to_tx_fifo(1, data_payload_right, TX_PAYLOAD_LENGTH);
 
@@ -273,6 +273,6 @@ void nrf_gzll_host_rx_data_ready(uint32_t pipe, nrf_gzll_host_rx_info_t rx_info)
     nrf_gzll_flush_rx_fifo(pipe);
 
     //load ACK payload into TX queue
-    ack_payload[0] =  0x55;
-    nrf_gzll_add_packet_to_tx_fifo(pipe, ack_payload, TX_PAYLOAD_LENGTH);
+    //ack_payload[0] =  0x10;
+    //nrf_gzll_add_packet_to_tx_fifo(pipe, ack_payload, TX_PAYLOAD_LENGTH);
 }

@@ -271,7 +271,7 @@ void  nrf_gzll_device_tx_success(uint32_t pipe, nrf_gzll_device_tx_info_t tx_inf
     if (tx_info.payload_received_in_ack)
     {
         // Pop packet and write first byte of the payload to the GPIO port.
-        nrf_gzll_fetch_packet_from_rx_fifo(pipe, ack_payload, &ack_payload_length);
+        //nrf_gzll_fetch_packet_from_rx_fifo(pipe, ack_payload, &ack_payload_length);
     }
 }
 
