@@ -18,7 +18,7 @@
 /** Configuration */
 /*****************************************************************************/
 
-const nrf_drv_rtc_t rtc_maint = NRF_DRV_RTC_INSTANCE(0); /**< Declaring an instance of nrf_drv_rtc for RTC0. */
+//const nrf_drv_rtc_t rtc_maint = NRF_DRV_RTC_INSTANCE(0); /**< Declaring an instance of nrf_drv_rtc for RTC0. */
 const nrf_drv_rtc_t rtc_deb = NRF_DRV_RTC_INSTANCE(1); /**< Declaring an instance of nrf_drv_rtc for RTC1. */
 
 
@@ -30,8 +30,8 @@ static uint8_t data_payload[TX_PAYLOAD_LENGTH];                ///< Payload to s
 static uint8_t ack_payload[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH]; ///< Placeholder for received ACK payloads from Host.
 
 // Debounce time (dependent on tick frequency)
-#define DEBOUNCE 5
-#define ACTIVITY 500
+#define DEBOUNCE 4
+#define ACTIVITY 1
 
 // Key buffers
 static uint32_t keys, keys_snapshot;
@@ -146,9 +146,14 @@ static void handler_debounce(nrf_drv_rtc_int_type_t int_type)
             keys_snapshot = read_keys();
             debouncing = true;
             debounce_ticks = 0;
-        }
+        } else {
+	    activity_ticks++;
+	    if (activity_ticks > ACTIVITY)
+		    nrf_drv_rtc_disable(&rtc_deb);
+	}
     }
 
+#if 0
     // looking for 500 ticks of no keys pressed, to go back to deep sleep
     if (read_keys() == 0)
     {
@@ -163,6 +168,7 @@ static void handler_debounce(nrf_drv_rtc_int_type_t int_type)
     {
         activity_ticks = 0;
     }
+#endif
 
 }
 
@@ -179,11 +185,11 @@ static void lfclk_config(void)
 static void rtc_config(void)
 {
     //Initialize RTC instance
-    nrf_drv_rtc_init(&rtc_maint, NULL, handler_maintenance);
+    //nrf_drv_rtc_init(&rtc_maint, NULL, handler_maintenance);
     nrf_drv_rtc_init(&rtc_deb, NULL, handler_debounce);
 
     //Enable tick event & interrupt
-    nrf_drv_rtc_tick_enable(&rtc_maint,true);
+    //nrf_drv_rtc_tick_enable(&rtc_maint,true);
     nrf_drv_rtc_tick_enable(&rtc_deb,true);
 
     //Power on RTC instance
@@ -238,7 +244,7 @@ void GPIOTE_IRQHandler(void)
         NRF_GPIOTE->EVENTS_PORT = 0;
 
         //enable rtc interupt triggers
-        nrf_drv_rtc_enable(&rtc_maint);
+        //nrf_drv_rtc_enable(&rtc_maint);
         nrf_drv_rtc_enable(&rtc_deb);
 
         debouncing = false;

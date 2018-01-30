@@ -213,6 +213,7 @@ int main(void)
         
         // if no packets recieved from keyboards in a few seconds, assume either
         // out of range, or sleeping due to no keys pressed, update keystates to off
+#if 0
         left_active++;
         right_active++;
         if (left_active > INACTIVE)
@@ -233,6 +234,7 @@ int main(void)
             data_buffer[9] = 0;
             right_active = 0;
         }
+#endif
     }
 }
 
