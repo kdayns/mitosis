@@ -38,7 +38,7 @@ static uint8_t data_payload[TX_PAYLOAD_LENGTH];                ///< Payload to s
 static uint8_t ack_payload[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH]; ///< Placeholder for received ACK payloads from Host.
 
 // Debounce time (dependent on tick frequency)
-#define DEBOUNCE 4
+#define DEBOUNCE 5
 #define ACTIVITY 1
 
 // Key buffers
@@ -218,7 +218,8 @@ int main()
     nrf_gzll_set_timeslot_period(2700);
 
     // Attempt sending every packet up to 100 times    
-    nrf_gzll_set_max_tx_attempts(100);
+
+    nrf_gzll_set_max_tx_attempts(50);
 
     // Addressing
     nrf_gzll_set_base_address_0(0x01020304);
