@@ -18,6 +18,13 @@
 /** Configuration */
 /*****************************************************************************/
 
+#define NRF_GZLL_DEFAULT_TIMESLOT_PERIOD 600      ///< Default timeslot period.
+#define NRF_GZLL_DEFAULT_TIMESLOTS_PER_CHANNEL 2  ///< Timeslots use by the Host and by the Device when communication is in sync.
+#define NRF_GZLL_DEFAULT_TIMESLOTS_PER_CHANNEL_WHEN_DEVICE_OUT_OF_SYNC 15  ///< Timeslots use by the Device before communication is in sync.
+#define NRF_GZLL_DEFAULT_SYNC_LIFETIME (3*NRF_GZLL_DEFAULT_CHANNEL_TABLE_SIZE*NRF_GZLL_DEFAULT_TIMESLOTS_PER_CHANNEL)  ///< Number of timeslots to keep the timer running so that communication remains synchronized.
+#define NRF_GZLL_DEFAULT_DEVICE_CHANNEL_SELECTION_POLICY NRF_GZLL_DEVICE_CHANNEL_SELECTION_POLICY_USE_SUCCESSFUL  ///< Default channel Gazell Device channel selection policy
+#define NRF_GZLL_DEFAULT_MAX_TX_ATTEMPTS 0                ///< Default maximum TX attempts for each packet. A value of zero implies maximum 
+
 //const nrf_drv_rtc_t rtc_maint = NRF_DRV_RTC_INSTANCE(0); /**< Declaring an instance of nrf_drv_rtc for RTC0. */
 const nrf_drv_rtc_t rtc_deb = NRF_DRV_RTC_INSTANCE(1); /**< Declaring an instance of nrf_drv_rtc for RTC1. */
 
